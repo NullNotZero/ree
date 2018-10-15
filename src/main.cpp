@@ -3,6 +3,22 @@
 #endif
 #include <iostream>
 
+double serialPi(int n) {
+   double sum = 0.0;
+   double factor = 1.0;
+   double retValue = 0;
+
+
+    for (int i = 0; i < n; i++) {
+        sum += factor/(2*i+1);
+        factor = -factor;
+    }
+   retValue = 4.0*sum;
+
+   return retValue;
+
+}
+
 int main(){
 
     #ifdef _OPENMP
