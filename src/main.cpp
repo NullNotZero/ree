@@ -1,17 +1,22 @@
-#ifdef _OPENMP
-    #include <omp.h>
-#endif
-#include <iostream>
 
-double serialPi(int n) {
+#include <omp.h>
+#include <iostream>
+#include <iomanip>
+#include "CStopWatch.h"
+
+double serialPi(int n, int numThreads=1) {
    double sum = 0.0;
    double factor = 1.0;
    double retValue = 0;
 
-
+    #pragma omp parallel for num_threads(numThreads) reduction(+:sum) private(factor)
     for (int i = 0; i < n; i++) {
+        
+        if(i%2 == 0){ factor = 1.0;}
+        else        { factor = -1.0; }
+
         sum += factor/(2*i+1);
-        factor = -factor;
+        // factor = -factor;
     }
    retValue = 4.0*sum;
 
@@ -21,13 +26,25 @@ double serialPi(int n) {
 
 int main(){
 
-    #ifdef _OPENMP
-        int myRank = omp_get_thread_num();
-        int numThreads = omp_get_num_threads();
-    #else
-        int myRank = 0;
-        int numThreads = 1;
-    #endif
+    int numThreads;
+    int threadMin, threadMax, threadStep;
+    int n;
+    CStopWatch timer;
+    double result;
+
+    n = 1000;
+    threadMin = 1; threadMax = 2; threadStep = 1;
+
+    for(numThreads=threadMin; numThreads<=threadMax; numThreads+=threadStep){
+        for(int curTrial=0; curTrial<10; curTrial++){
+            result = 0.0;
+            omp_set_num_threads(numThreads);
+            timer.startTimer();
+            result = serialPi(n, numThreads); 
+            timer.stopTimer();
+            std::cout << numThreads << ", " << n << ", " << std::setprecision(10) << result << ", " << std::setprecision(5) << timer.getElapsedTime() << "\n";
+        }
+    }
 
 
     return 0;
