@@ -5,25 +5,7 @@
 #include "CStopWatch.h"
 
 double serialPi(int n, int numThreads=1) {
-   double sum = 0.0;
-   double factor = 1.0;
-   double retValue = 0;
-
-
-    #pragma omp parallel for num_threads(numThreads) reduction(+:sum) private(factor)
-    for (int i = 0; i < n; i++) {
-        
-    
-        sum += factor/(2*i+1);
-        // factor = -factor;
-
-        if(i%2 == 0){ factor = 1.0;}
-        else        { factor = -1.0; }
-      
-    }
-   retValue = 4.0*sum;
-
-   return retValue;
+  
 
 }
 
