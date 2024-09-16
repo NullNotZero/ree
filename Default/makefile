@@ -1,7 +1,11 @@
 #CC = g++
 UNAME := $(shell uname)
 ifeq ($(UNAME),Darwin)
+<<<<<<< Updated upstream
 	CC = g++-8
+=======
+	CC = g++-14
+>>>>>>> Stashed changes
 else
 	CC = g++
 endif

@@ -4,33 +4,35 @@
 #include <iomanip>
 #include "CStopWatch.h"
 
-double serialPi(int n, int numThreads=1) {
-  
 
+double serialPi(int n, int numThreads = 1){
+    double sum = 0.0;
+    double factor = 1.0;
+    double retValue = 0.0;
+
+    #pragma omp parallel for num_threads(numThreads) reduction(+:sum) private(factor)
+    for(int i=0; i< n; i++){
+
+        if(i%2 == 0){ factor = 1.0;}
+        else        { factor = -1.0;}
+
+        sum += factor/(2*i+1);
+       
+    }
+    retValue = 4.0*sum;
+
+    return retValue;
 }
 
 int main(){
 
-    int numThreads;
-    int threadMin, threadMax, threadStep;
-    int n;
-    CStopWatch timer;
-    double result;
+    int n = 100000;
+    double result =0;
+    int maxThreads = 12;
 
-    n = 1000;
-    threadMin = 1; threadMax = 10; threadStep = 1;
-
-    for(numThreads=threadMin; numThreads<=threadMax; numThreads+=threadStep){
-        for(int curTrial=0; curTrial<1; curTrial++){
-            result = 0.0;
-            omp_set_num_threads(numThreads);
-            timer.startTimer();
-            result = serialPi(n, numThreads); 
-            timer.stopTimer();
-            std::cout << numThreads << ", " << n << ", " << std::setprecision(20) << result << ", " << std::setprecision(5) << std::fixed << timer.getElapsedTime() << "\n";
-        }
+    for(int numThreads=1; numThreads<maxThreads; numThreads++){
+        result = serialPi(n, numThreads);
+        std::cout << result << std::endl;
     }
-
-
-    return 0;
+    return 0;   
 }
